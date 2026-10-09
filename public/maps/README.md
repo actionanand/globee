@@ -19,12 +19,15 @@ The original source CRS was EPSG:7755. It was converted to EPSG:4326 and simplif
 
 ## World
 
-`scripts/prepare-world-map.sh` converts `node_modules/world-atlas/countries-50m.json` into the local `world-countries-50m.geojson` browser asset with GDAL RFC 7946 output and dateline splitting.
+`scripts/prepare-world-map.sh` manually converts `node_modules/world-atlas/countries-50m.json` with `topojson-client`, then uses GDAL RFC 7946 output and `-wrapdateline` to produce the local browser asset `public/maps/world-countries-50m.geojson`.
 
 - Package/version: `world-atlas` 2.0.2
 - Source: Natural Earth 4.1.0 Admin-0
-- Format: TopoJSON, converted to GeoJSON at runtime using `topojson-client`
+- Source format: TopoJSON
+- Runtime format: prepared GeoJSON (`public/maps/world-countries-50m.geojson`)
 - Renderer: MapLibre GL JS
+
+The browser loads the prepared GeoJSON directly. It does not convert TopoJSON or repair world winding at runtime.
 
 All geographic geometry is local/static. Globee uses no hosted basemap, online tile service, or map API key.
 
@@ -32,4 +35,4 @@ All geographic geometry is local/static. Globee uses no hosted basemap, online t
 
 `oceans-50m.geojson` is prepared locally from Natural Earth 5.1.2 marine polygons by `scripts/prepare-oceans.sh`. It contains only ocean pieces grouped into Globee's five educational oceans and uses GDAL dateline processing.
 
-`delhi-ncr.geojson` is prepared locally by `scripts/prepare-delhi-ncr.sh` and `scripts/extract-delhi-ncr.mjs`. It combines the NCRPB constituent list with NWDP district geometry and the existing whole-Delhi state geometry. It is a derived constituent overlay, not an official NCRPB polygon.
+`delhi-ncr.geojson` is prepared locally by `scripts/prepare-delhi-ncr.sh` and `scripts/extract-delhi-ncr.mjs`. Its 25 features combine the NCRPB constituent list with NWDP district geometry and the existing whole-Delhi state geometry: 14 Haryana, 8 Uttar Pradesh, 2 Rajasthan, and 1 Delhi. It is a derived constituent overlay, not an official NCRPB polygon. The India state layer remains selectable beneath the overlay for administrative context.

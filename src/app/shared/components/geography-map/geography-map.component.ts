@@ -6,11 +6,12 @@ import {
   ElementRef,
   inject,
   input,
+  output,
   signal,
   viewChild,
 } from '@angular/core';
 import * as maplibregl from 'maplibre-gl';
-import type { Map, MapGeoJSONFeature } from 'maplibre-gl';
+import type { Map, MapGeoJSONFeature, MapMouseEvent } from 'maplibre-gl';
 import {
   ExploreMode,
   GeoFeatureCollection,
@@ -21,16 +22,24 @@ import { GeographyDataService } from '../../../core/services/geography-data.serv
 import { INDIA_REGIONS, OCEANS } from '../../../core/services/geography-search.service';
 import { GeographySelectionService } from '../../../core/services/geography-selection.service';
 import { featureBounds, maplibreWorkerUrl } from '../../utils/geography.utils';
+import {
+  CONTINENT_FILL_COLORS,
+  SELECTED_FILL_COLOR,
+  continentCountryCodes,
+  countryForWorldNumericCode,
+} from '../../utils/geography-map-style';
 
 @Component({
   selector: 'app-geography-map',
   template:
-    '<div #map class="map" aria-label="Interactive geography map"></div><button class="reset" type="button" (click)="resetView()" aria-label="Reset map view">Reset view</button>@if (loading() || errorMessage() || hoveredName()) { <div class="map-status" aria-live="polite">@if (loading()) { Preparing the map… } @else if (errorMessage()) { {{ errorMessage() }} } @else if (hoveredName()) { {{ hoveredName() }} }</div> }',
+    '<div #map class="map" aria-label="Interactive geography map"></div><button class="reset" type="button" (click)="resetRequested.emit()" aria-label="Reset map view">Reset view</button>@if (loading() || errorMessage() || hoveredName()) { <div class="map-status" aria-live="polite">@if (loading()) { Preparing the map… } @else if (errorMessage()) { {{ errorMessage() }} } @else if (hoveredName()) { {{ hoveredName() }} }</div> }',
   styleUrl: './geography-map.component.scss',
 })
 export class GeographyMapComponent implements AfterViewInit {
   readonly mode = input.required<ExploreMode>();
   readonly preview = input<GeographyEntity | null>(null);
+  readonly sceneRevision = input.required<number>();
+  readonly resetRequested = output<void>();
   private readonly host = viewChild.required<ElementRef<HTMLDivElement>>('map');
   private readonly data = inject(GeographyDataService);
   private readonly countries = inject(CountryDataService);
@@ -47,6 +56,7 @@ export class GeographyMapComponent implements AfterViewInit {
   constructor() {
     effect(() => {
       const mode = this.mode();
+      this.sceneRevision();
       if (this.map) void this.showMode(mode);
     });
     effect(() => {
@@ -172,19 +182,19 @@ export class GeographyMapComponent implements AfterViewInit {
               'match',
               ['get', 'globee_continent'],
               'Africa',
-              '#e9a85d',
+              CONTINENT_FILL_COLORS['Africa'],
               'Asia',
-              '#e77e72',
+              CONTINENT_FILL_COLORS['Asia'],
               'Europe',
-              '#8ca7e8',
+              CONTINENT_FILL_COLORS['Europe'],
               'North America',
-              '#72b7a1',
+              CONTINENT_FILL_COLORS['North America'],
               'South America',
-              '#b78bd0',
+              CONTINENT_FILL_COLORS['South America'],
               'Oceania',
-              '#e6c85c',
+              CONTINENT_FILL_COLORS['Oceania'],
               'Antarctica',
-              '#c4d0d9',
+              CONTINENT_FILL_COLORS['Antarctica'],
               color,
             ]
           : color,
@@ -196,7 +206,11 @@ export class GeographyMapComponent implements AfterViewInit {
       id: 'geo-selected',
       type: 'fill',
       source: 'geography',
-      paint: { 'fill-color': '#f5c84c', 'fill-opacity': 0.72, 'fill-outline-color': '#153d31' },
+      paint: {
+        'fill-color': SELECTED_FILL_COLOR,
+        'fill-opacity': 0.72,
+        'fill-outline-color': '#153d31',
+      },
       filter: ['==', ['get', '_selected'], true],
     });
     map.on('mousemove', 'geo-fill', this.handleMouseMove);
@@ -276,6 +290,7 @@ export class GeographyMapComponent implements AfterViewInit {
         'fill-outline-color': '#3b4f4a',
       },
     });
+    map.setPaintProperty('geo-selected', 'fill-opacity', 0.38);
     map.addLayer({
       id: 'ncr-border',
       type: 'line',
@@ -347,13 +362,17 @@ export class GeographyMapComponent implements AfterViewInit {
   };
   private readonly handleNcrMove = (event: { features?: MapGeoJSONFeature[] }): void => {
     const feature = event.features?.[0];
+    const name = String(feature?.properties?.['name'] ?? 'NCR constituent');
+    const subregion = String(feature?.properties?.['subregion'] ?? '');
+    const componentType = String(feature?.properties?.['componentType'] ?? '');
     this.hoveredName.set(
-      `${String(feature?.properties?.['name'] ?? 'NCR constituent')} — ${String(feature?.properties?.['subregion'] ?? '')}`,
+      componentType === 'NCT' ? `${name} — NCT Delhi` : `${name} — ${subregion}`,
     );
     this.map?.getCanvas().style.setProperty('cursor', 'pointer');
   };
-  private readonly handleNcrClick = (): void => {
-    /* NCR district selection intentionally retains the Delhi NCR card. */
+  private readonly handleNcrClick = (event: MapMouseEvent): void => {
+    const stateFeature = this.map?.queryRenderedFeatures(event.point, { layers: ['geo-fill'] })[0];
+    if (stateFeature) this.selectFeature('india', stateFeature);
   };
   private selectFeature(kind: 'world' | 'india', feature?: MapGeoJSONFeature): void {
     if (!feature) return;
@@ -421,7 +440,9 @@ export class GeographyMapComponent implements AfterViewInit {
           : entity.indiaRegion
             ? feature.properties['state_name'] === entity.indiaRegion.sourceName
             : entity.continent
-              ? feature.properties['globee_continent'] === this.continentMapValue(entity)
+              ? continentCountryCodes(entity.continent, this.countries.countries).includes(
+                  String(feature.properties['globee_country_code'] ?? ''),
+                )
               : false,
       ) ?? [];
     if (features.length) {
@@ -460,18 +481,13 @@ export class GeographyMapComponent implements AfterViewInit {
       return;
     }
     if (entity.continent) {
-      const countryCodes = this.countries.countries
-        .filter((country) => country.continent === this.continentMapValue(entity))
-        .map((country) => country.code);
+      const countryCodes = continentCountryCodes(entity.continent, this.countries.countries);
       this.map.setFilter('geo-selected', [
         'in',
         ['get', 'globee_country_code'],
         ['literal', countryCodes],
       ]);
     }
-  }
-  private continentMapValue(entity: GeographyEntity): string {
-    return entity.continent?.mapValue ?? entity.continent?.name ?? '';
   }
   private restoreSelectionHighlight(): void {
     const selected = this.selection.selected();
@@ -484,16 +500,14 @@ export class GeographyMapComponent implements AfterViewInit {
     if (this.map?.getLayer('ocean-selected'))
       this.map.setFilter('ocean-selected', ['==', ['get', 'globee_ocean'], '']);
   }
-  resetView(): void {
-    this.selection.clear();
-    void this.showMode(this.mode());
-  }
   private enrichWorld(collection: GeoFeatureCollection): GeoFeatureCollection {
     return {
       type: 'FeatureCollection',
       features: collection.features.map((feature) => {
-        const country = this.countries.findByNumericCode(
-          String(feature.properties['globee_numeric_code'] ?? ''),
+        const numericCode = String(feature.properties['globee_numeric_code'] ?? '');
+        // `000` represents unknown or disputed geometry and must never be fuzzy-linked.
+        const country = countryForWorldNumericCode(numericCode, (code) =>
+          this.countries.findByNumericCode(code),
         );
         return {
           ...feature,

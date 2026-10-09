@@ -10,4 +10,8 @@ describe('CountryDataService', () => {
     expect(service().findByCode('USA')?.name).toBe('United States');
     expect(service().findByCode('XXX')).toBeUndefined();
   });
+  it('links Australia and Antarctica to their stable country records', () => {
+    expect(service().findByCode('AUS')?.continent).toBe('Oceania');
+    expect(service().findByCode('ATA')?.name).toBe('Antarctica');
+  });
 });

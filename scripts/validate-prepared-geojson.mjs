@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import { isAllowedDatelineEdge } from './lib/geojson-validation.mjs';
 
 const [path, kind] = process.argv.slice(2);
 if (!path || !['world', 'oceans'].includes(kind))
@@ -20,7 +21,10 @@ for (const feature of collection.features) {
       throw new Error(`Invalid coordinate ${longitude},${latitude}`);
   for (const ring of rings(feature.geometry))
     for (let index = 1; index < ring.length; index += 1)
-      if (Math.abs(ring[index][0] - ring[index - 1][0]) > 180)
+      if (
+        Math.abs(ring[index][0] - ring[index - 1][0]) > 180 &&
+        !isAllowedDatelineEdge(ring[index - 1], ring[index])
+      )
         throw new Error('Prepared geometry contains an antimeridian segment jump');
 }
 if (

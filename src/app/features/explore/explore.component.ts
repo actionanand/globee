@@ -7,6 +7,7 @@ import { GeographySelectionService } from '../../core/services/geography-selecti
 import { GeographyInfoCardComponent } from '../../shared/components/geography-info-card/geography-info-card.component';
 import { GeographyMapComponent } from '../../shared/components/geography-map/geography-map.component';
 import { entityMapMode } from '../../shared/utils/geography.utils';
+import { nextScene } from './explore-scene.utils';
 @Component({
   selector: 'app-explore',
   imports: [NgOptimizedImage, RouterLink, GeographyMapComponent, GeographyInfoCardComponent],
@@ -17,6 +18,7 @@ export class ExploreComponent {
   private readonly searchService = inject(GeographySearchService);
   readonly selection = inject(GeographySelectionService);
   readonly mode = signal<ExploreMode>('world');
+  readonly sceneRevision = signal(0);
   readonly query = signal('');
   readonly results = computed(() => this.searchService.search(this.query()));
   readonly mapHelp = computed(() => {
@@ -40,12 +42,21 @@ export class ExploreComponent {
     { id: 'india', label: 'India' },
   ];
   setMode(mode: ExploreMode): void {
+    const next = nextScene(this.mode(), mode, this.sceneRevision());
     this.selection.clear();
-    this.mode.set(mode);
+    this.pickerPreview.set(null);
+    this.mode.set(next.mode);
+    this.sceneRevision.set(next.revision);
+  }
+  resetScene(): void {
+    this.selection.clear();
+    this.pickerPreview.set(null);
+    this.sceneRevision.update((revision) => revision + 1);
   }
   choose(entity: GeographyEntity): void {
     this.query.set('');
-    this.mode.set(entityMapMode(entity));
+    const mode = entityMapMode(entity);
+    if (this.mode() !== mode) this.mode.set(mode);
     this.selection.select(entity);
   }
   updateQuery(event: Event): void {

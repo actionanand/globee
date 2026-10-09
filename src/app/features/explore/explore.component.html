@@ -48,7 +48,12 @@
   </section>
   <section class="content">
     <div class="map-wrap">
-      <app-geography-map [mode]="mode()" [preview]="pickerPreview()" />
+      <app-geography-map
+        [mode]="mode()"
+        [sceneRevision]="sceneRevision()"
+        [preview]="pickerPreview()"
+        (resetRequested)="resetScene()"
+      />
       <p class="map-help">{{ mapHelp() }}</p>
     </div>
     <aside>

@@ -13,6 +13,16 @@ describe('GeographySearchService', () => {
     expect(service().search('Karnataka')[0]?.type).toBe('india-state');
     expect(service().search('Delhi')[0]?.type).toBe('india-union-territory');
   });
+  it('keeps Oceania / Australia discoverable as a continent without hiding Australia', () => {
+    expect(service().search('Oceania')[0]).toMatchObject({
+      name: 'Oceania / Australia',
+      type: 'continent',
+    });
+    expect(service().search('Australia')[0]).toMatchObject({
+      name: 'Australia',
+      type: 'country',
+    });
+  });
   it('resolves documented aliases', () => {
     expect(service().search('Tamilnadu')[0]?.name).toBe('Tamil Nadu');
     expect(service().search('Pondicherry')[0]?.name).toBe('Puducherry');
