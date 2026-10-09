@@ -27,14 +27,22 @@
     "@angular/forms": "^22.1.0",
     "@angular/platform-browser": "^22.1.0",
     "@angular/router": "^22.1.0",
+    "@turf/bbox": "^7.4.0",
+    "fuse.js": "^7.5.0",
+    "maplibre-gl": "^6.13.0",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
+    "topojson-client": "^3.1.0",
+    "tslib": "^2.3.0",
+    "world-atlas": "^2.0.2",
+    "world-countries": "^5.1.0"
   },
   "devDependencies": {
     "@angular/build": "^22.1.7",
     "@angular/cli": "^22.1.7",
     "@angular/compiler-cli": "^22.1.0",
     "@eslint/js": "^10.0.1",
+    "@types/geojson": "^7946.0.16",
+    "@types/topojson-client": "^3.1.5",
     "angular-eslint": "22.1.0",
     "eslint": "^10.3.0",
     "husky": "^9.1.7",

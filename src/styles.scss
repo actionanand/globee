@@ -1,1 +1,44 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'maplibre-gl/dist/maplibre-gl.css';
+:root {
+  color-scheme: light;
+  --page: #f6fbf8;
+  --surface: #ffffff;
+  --text: #17332d;
+  --muted: #526861;
+  --border: #c9ddd4;
+  --accent: #159a78;
+  --accent-strong: #08735a;
+  --accent-soft: #dcf5e9;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+:root.dark {
+  color-scheme: dark;
+  --page: #10221f;
+  --surface: #17312c;
+  --text: #effaf5;
+  --muted: #bed1ca;
+  --border: #3d5c54;
+  --accent: #56d5ab;
+  --accent-strong: #8cedcb;
+  --accent-soft: #21483d;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+}
+* {
+  box-sizing: border-box;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not(.dark) {
+    color-scheme: dark;
+    --page: #10221f;
+    --surface: #17312c;
+    --text: #effaf5;
+    --muted: #bed1ca;
+    --border: #3d5c54;
+    --accent: #56d5ab;
+    --accent-strong: #8cedcb;
+    --accent-soft: #21483d;
+  }
+}

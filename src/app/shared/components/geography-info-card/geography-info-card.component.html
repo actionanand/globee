@@ -1,0 +1,93 @@
+@if (entity(); as item) {
+  <section class="card" aria-live="polite">
+    <p class="type">{{ label(item.type) }}</p>
+    <h2>{{ item.country?.flag }} {{ item.name }}</h2>
+    @if (item.description) {
+      <p>{{ item.description }}</p>
+    }
+    @if (item.country; as country) {
+      <dl>
+        @if (country.capital.length) {
+          <div>
+            <dt>Capital</dt>
+            <dd>{{ country.capital.join(', ') }}</dd>
+          </div>
+        }
+        <div>
+          <dt>Continent</dt>
+          <dd>{{ country.continent }}</dd>
+        </div>
+        @if (country.languages.length) {
+          <div>
+            <dt>Languages</dt>
+            <dd>{{ country.languages.join(', ') }}</dd>
+          </div>
+        }
+        @if (country.currencies.length) {
+          <div>
+            <dt>Currency</dt>
+            <dd>{{ country.currencies.join(', ') }}</dd>
+          </div>
+        }
+        @if (country.neighbours.length) {
+          <div>
+            <dt>Neighbours</dt>
+            <dd>{{ country.neighbours.length }}</dd>
+          </div>
+        }
+      </dl>
+    }
+    @if (item.indiaRegion; as region) {
+      <p class="quiet">
+        {{ region.type === 'state' ? 'State of India' : 'Union Territory of India' }}
+      </p>
+    }
+  </section>
+} @else {
+  <section class="card empty">
+    <h2>Start exploring</h2>
+    <p>
+      Select a place on the map, or use search to discover a country, continent, ocean, or Indian
+      region.
+    </p>
+  </section>
+}
+@if (mode() === 'oceans') {
+  <section class="card picker" aria-label="Ocean picker">
+    <h3>Explore the oceans</h3>
+    @for (ocean of oceans; track ocean.id) {
+      <button
+        type="button"
+        [class.selected]="isSelected('ocean-' + ocean.id)"
+        [attr.aria-pressed]="isSelected('ocean-' + ocean.id)"
+        (click)="selectOcean(ocean)"
+        (pointerenter)="previewOcean(ocean)"
+        (pointerleave)="pickerPreview.emit(null)"
+        (focus)="previewOcean(ocean)"
+        (blur)="pickerPreview.emit(null)"
+      >
+        <span>{{ ocean.name }}</span
+        ><small>Ocean</small>
+      </button>
+    }
+  </section>
+} @else if (mode() === 'continents') {
+  <section class="card picker" aria-label="Continent picker">
+    <h3>Explore the continents</h3>
+    @for (continent of continents; track continent.id) {
+      <button
+        type="button"
+        [class.selected]="isSelected('continent-' + continent.id)"
+        [attr.aria-pressed]="isSelected('continent-' + continent.id)"
+        (click)="selectContinent(continent)"
+        (pointerenter)="previewContinent(continent)"
+        (pointerleave)="pickerPreview.emit(null)"
+        (focus)="previewContinent(continent)"
+        (blur)="pickerPreview.emit(null)"
+      >
+        <span>{{ continent.name }}</span
+        ><small>Continent</small>
+      </button>
+    }
+  </section>
+}
