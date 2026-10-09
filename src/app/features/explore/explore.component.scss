@@ -128,13 +128,22 @@ input:focus-visible {
   align-items: start;
 }
 .map-wrap {
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  min-height: min(70dvh, 720px);
+  height: clamp(440px, 68dvh, 720px);
+  min-height: 0;
   border: 1px solid var(--border);
   border-radius: 1rem;
   background: #bfe7ef;
 }
+app-geography-map {
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
+}
 .map-help {
+  flex: 0 0 auto;
   margin: 0;
   padding: 0.65rem 0.9rem;
   background: var(--surface);
@@ -157,7 +166,7 @@ aside {
     margin-top: 0.7rem;
   }
   .map-wrap {
-    min-height: 360px;
+    height: clamp(360px, 60dvh, 560px);
   }
   .content aside {
     position: static;

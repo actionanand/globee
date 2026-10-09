@@ -19,6 +19,7 @@ export interface CountryInfo {
 }
 export interface IndiaRegionInfo {
   name: string;
+  sourceName: string;
   type: 'state' | 'union-territory';
   aliases?: string[];
   capital?: string;
@@ -37,6 +38,8 @@ export interface SpecialRegionDefinition {
   aliases: string[];
   center: [number, number];
   zoom: number;
+  mapContext: 'world' | 'india';
+  focusBounds?: [[number, number], [number, number]];
   description: string;
 }
 export interface ContinentDefinition {

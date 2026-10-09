@@ -31,9 +31,14 @@
                 "input": "public"
               },
               {
-                "glob": "countries-50m.json",
-                "input": "node_modules/world-atlas",
-                "output": "maps"
+                "glob": "maplibre-gl-worker.mjs",
+                "input": "node_modules/maplibre-gl/dist",
+                "output": "maplibre"
+              },
+              {
+                "glob": "maplibre-gl-shared.mjs",
+                "input": "node_modules/maplibre-gl/dist",
+                "output": "maplibre"
               }
             ],
             "styles": ["src/styles.scss"]

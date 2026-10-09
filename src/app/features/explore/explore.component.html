@@ -48,11 +48,15 @@
   </section>
   <section class="content">
     <div class="map-wrap">
-      <app-geography-map [mode]="mode()" />
-      <p class="map-help">
-        Use the map controls to zoom. Select a country or Indian region to learn more.
-      </p>
+      <app-geography-map [mode]="mode()" [preview]="pickerPreview()" />
+      <p class="map-help">{{ mapHelp() }}</p>
     </div>
-    <aside><app-geography-info-card [entity]="selection.selected()" /></aside>
+    <aside>
+      <app-geography-info-card
+        [entity]="selection.selected()"
+        [mode]="mode()"
+        (pickerPreview)="pickerPreview.set($event)"
+      />
+    </aside>
   </section>
 </main>

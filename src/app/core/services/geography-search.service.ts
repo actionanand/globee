@@ -59,8 +59,13 @@ export const DELHI_NCR: SpecialRegionDefinition = {
   name: 'Delhi NCR',
   aliases: ['NCR', 'National Capital Region'],
   center: [77.18, 28.65],
-  zoom: 8,
-  description: 'A special region spanning Delhi and neighbouring areas.',
+  zoom: 5.5,
+  mapContext: 'india',
+  focusBounds: [
+    [74, 26],
+    [80, 31],
+  ],
+  description: "Constituent areas based on NCRPB's official list.",
 };
 const unionTerritories = new Set([
   'Andaman & Nicobar Island',
@@ -77,6 +82,11 @@ const aliases: Record<string, string[]> = {
   Puducherry: ['Pondicherry'],
   Delhi: ['NCT of Delhi', 'National Capital Territory of Delhi', 'Delhi NCT'],
   'Andaman & Nicobar Island': ['Andaman and Nicobar Islands'],
+};
+const indiaDisplayNames: Record<string, string> = {
+  'Andaman & Nicobar Island': 'Andaman and Nicobar Islands',
+  'Arunanchal Pradesh': 'Arunachal Pradesh',
+  'Dadra & Nagar Havelli and Daman & Diu': 'Dadra and Nagar Haveli and Daman and Diu',
 };
 export const INDIA_REGIONS: IndiaRegionInfo[] = [
   'Andaman & Nicobar Island',
@@ -116,9 +126,10 @@ export const INDIA_REGIONS: IndiaRegionInfo[] = [
   'Uttar Pradesh',
   'West Bengal',
 ].map((name) => ({
-  name,
+  name: indiaDisplayNames[name] ?? name,
+  sourceName: name,
   type: unionTerritories.has(name) ? 'union-territory' : 'state',
-  aliases: aliases[name],
+  aliases: [name, ...(aliases[name] ?? [])].filter((alias) => alias !== indiaDisplayNames[name]),
 }));
 @Injectable({ providedIn: 'root' })
 export class GeographySearchService {
@@ -149,7 +160,7 @@ export class GeographySearchService {
         description: ocean.description,
       })),
       ...INDIA_REGIONS.map((indiaRegion) => ({
-        id: `india-${indiaRegion.name}`,
+        id: `india-${indiaRegion.sourceName}`,
         name: indiaRegion.name,
         type:
           indiaRegion.type === 'state'

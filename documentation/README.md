@@ -23,4 +23,20 @@ The map starts with an empty local MapLibre style and bundled geometry. It does 
 
 `npm run build:gh` builds with the `/globee/` base href. The Angular build copies `world-atlas/countries-50m.json` to `maps/` alongside public assets.
 
-Future datasets should be authoritative, stored as local static assets, and documented in [geography-data.md](documentation/geography-data.md). Do not introduce unverified facts or inferred boundaries.
+Future datasets should be authoritative, stored as local static assets, and documented in [geography-data.md](geography-data.md). Do not introduce unverified facts or inferred boundaries.
+
+## Explorer modes and local map architecture
+
+Globee provides World, Continents, Oceans, India, and Delhi NCR special-region views through a unified search. MapLibre GL JS renders only local static data, with no hosted tiles. Its v6 worker modules are copied during the Angular build and configured using a `document.baseURI`-relative worker URL.
+
+World country TopoJSON is converted at runtime and rewound into RFC 7946 orientation before rendering; no coordinates are moved. Enriched stable country properties drive click selection rather than MapLibre's internal feature IDs.
+
+| Runtime data         | Source                                | Form                                |
+| -------------------- | ------------------------------------- | ----------------------------------- |
+| World countries      | world-atlas 2.0.2 / Natural Earth     | Bundled TopoJSON, converted locally |
+| Oceans               | Natural Earth 5.1.2 marine polygons   | Derived local five-ocean asset      |
+| India states/UTs     | NWDP / Survey of India State Boundary | Local GeoJSON                       |
+| Delhi NCR membership | NCR Planning Board                    | Official constituent list           |
+| Delhi NCR districts  | NWDP District Boundary                | Derived local overlay               |
+
+Preparation scripts live in `scripts/`. They are intentionally run manually so downloaded source data can be inspected before a derived local asset is added. Delhi NCR is a Globee-derived constituent overlay, not an NCRPB boundary shapefile.

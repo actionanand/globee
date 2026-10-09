@@ -52,3 +52,38 @@
     </p>
   </section>
 }
+@if (mode() === 'oceans') {
+  <section class="card picker" aria-label="Ocean picker">
+    <h3>Explore the oceans</h3>
+    @for (ocean of oceans; track ocean.id) {
+      <button
+        type="button"
+        (click)="selectOcean(ocean)"
+        (pointerenter)="previewOcean(ocean)"
+        (pointerleave)="pickerPreview.emit(null)"
+        (focus)="previewOcean(ocean)"
+        (blur)="pickerPreview.emit(null)"
+      >
+        <span>{{ ocean.name }}</span
+        ><small>Ocean</small>
+      </button>
+    }
+  </section>
+} @else if (mode() === 'continents') {
+  <section class="card picker" aria-label="Continent picker">
+    <h3>Explore the continents</h3>
+    @for (continent of continents; track continent.id) {
+      <button
+        type="button"
+        (click)="selectContinent(continent)"
+        (pointerenter)="previewContinent(continent)"
+        (pointerleave)="pickerPreview.emit(null)"
+        (focus)="previewContinent(continent)"
+        (blur)="pickerPreview.emit(null)"
+      >
+        <span>{{ continent.name }}</span
+        ><small>Continent</small>
+      </button>
+    }
+  </section>
+}

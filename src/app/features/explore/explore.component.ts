@@ -6,6 +6,7 @@ import { GeographySearchService } from '../../core/services/geography-search.ser
 import { GeographySelectionService } from '../../core/services/geography-selection.service';
 import { GeographyInfoCardComponent } from '../../shared/components/geography-info-card/geography-info-card.component';
 import { GeographyMapComponent } from '../../shared/components/geography-map/geography-map.component';
+import { entityMapMode } from '../../shared/utils/geography.utils';
 @Component({
   selector: 'app-explore',
   imports: [NgOptimizedImage, RouterLink, GeographyMapComponent, GeographyInfoCardComponent],
@@ -18,7 +19,20 @@ export class ExploreComponent {
   readonly mode = signal<ExploreMode>('world');
   readonly query = signal('');
   readonly results = computed(() => this.searchService.search(this.query()));
+  readonly mapHelp = computed(() => {
+    switch (this.mode()) {
+      case 'continents':
+        return 'Explore the countries that make up each continent.';
+      case 'oceans':
+        return 'Choose an ocean to explore its part of the world.';
+      case 'india':
+        return 'Select a state or Union Territory to learn more.';
+      default:
+        return 'Select a country to learn more.';
+    }
+  });
   readonly dark = signal(false);
+  readonly pickerPreview = signal<GeographyEntity | null>(null);
   readonly modes: { id: ExploreMode; label: string }[] = [
     { id: 'world', label: 'World' },
     { id: 'continents', label: 'Continents' },
@@ -26,18 +40,13 @@ export class ExploreComponent {
     { id: 'india', label: 'India' },
   ];
   setMode(mode: ExploreMode): void {
+    this.selection.clear();
     this.mode.set(mode);
-    if (mode === 'india')
-      this.selection.select({ id: 'country-IND', name: 'India', type: 'country' });
   }
   choose(entity: GeographyEntity): void {
-    this.selection.select(entity);
     this.query.set('');
-    if (entity.type === 'india-state' || entity.type === 'india-union-territory')
-      this.mode.set('india');
-    else if (entity.type === 'ocean') this.mode.set('oceans');
-    else if (entity.type === 'continent') this.mode.set('continents');
-    else this.mode.set('world');
+    this.mode.set(entityMapMode(entity));
+    this.selection.select(entity);
   }
   updateQuery(event: Event): void {
     this.query.set((event.target as HTMLInputElement).value);

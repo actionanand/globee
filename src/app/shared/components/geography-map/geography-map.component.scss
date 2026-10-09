@@ -1,10 +1,44 @@
-.map {
-  min-height: 420px;
+:host {
+  position: relative;
+  display: block;
   height: 100%;
+  min-height: 0;
   width: 100%;
 }
-@media (max-width: 640px) {
-  .map {
-    min-height: 360px;
-  }
+.map {
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+}
+.map-status {
+  position: absolute;
+  z-index: 2;
+  top: 0.75rem;
+  left: 0.75rem;
+  max-width: 18rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 0.5rem;
+  background: #17332de8;
+  color: #fff;
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+.reset {
+  position: absolute;
+  z-index: 2;
+  right: 0.75rem;
+  top: 0.75rem;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #28584b;
+  border-radius: 0.5rem;
+  background: #fffffff0;
+  color: #17332d;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.reset:focus-visible {
+  outline: 3px solid #eab308;
+  outline-offset: 2px;
 }
