@@ -29,6 +29,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "countries-50m.json",
+                "input": "node_modules/world-atlas",
+                "output": "maps"
               }
             ],
             "styles": ["src/styles.scss"]

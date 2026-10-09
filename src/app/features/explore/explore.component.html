@@ -1,0 +1,58 @@
+<main class="shell">
+  <header>
+    <a class="brand" routerLink="/explore" aria-label="Globee home"
+      ><img ngSrc="globee.png" width="512" height="512" alt="" priority /> <span>Globee</span></a
+    >
+    <p>Explore the world. Learn as you go.</p>
+    <button
+      class="theme"
+      type="button"
+      (click)="toggleTheme()"
+      [attr.aria-pressed]="dark()"
+      aria-label="Toggle dark theme"
+    >
+      {{ dark() ? '☀' : '◐' }}
+    </button>
+  </header>
+  <section class="toolbar" aria-label="Explore controls">
+    <div class="search">
+      <label for="place-search">Search the globe</label
+      ><input
+        id="place-search"
+        type="search"
+        placeholder="Try Japan, Tokyo, Asia, or Delhi NCR"
+        [value]="query()"
+        (input)="updateQuery($event)"
+        autocomplete="off"
+      />
+      @if (results().length) {
+        <ul role="listbox" aria-label="Search results">
+          @for (result of results(); track result.id) {
+            <li>
+              <button type="button" (click)="choose(result)">
+                <span>{{ result.name }}</span
+                ><small>{{ typeLabel(result.type) }}</small>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+    <nav aria-label="Map mode">
+      @for (item of modes; track item.id) {
+        <button type="button" [class.active]="mode() === item.id" (click)="setMode(item.id)">
+          {{ item.label }}
+        </button>
+      }
+    </nav>
+  </section>
+  <section class="content">
+    <div class="map-wrap">
+      <app-geography-map [mode]="mode()" />
+      <p class="map-help">
+        Use the map controls to zoom. Select a country or Indian region to learn more.
+      </p>
+    </div>
+    <aside><app-geography-info-card [entity]="selection.selected()" /></aside>
+  </section>
+</main>

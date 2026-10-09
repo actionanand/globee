@@ -1,0 +1,54 @@
+@if (entity(); as item) {
+  <section class="card" aria-live="polite">
+    <p class="type">{{ label(item.type) }}</p>
+    <h2>{{ item.country?.flag }} {{ item.name }}</h2>
+    @if (item.description) {
+      <p>{{ item.description }}</p>
+    }
+    @if (item.country; as country) {
+      <dl>
+        @if (country.capital.length) {
+          <div>
+            <dt>Capital</dt>
+            <dd>{{ country.capital.join(', ') }}</dd>
+          </div>
+        }
+        <div>
+          <dt>Continent</dt>
+          <dd>{{ country.continent }}</dd>
+        </div>
+        @if (country.languages.length) {
+          <div>
+            <dt>Languages</dt>
+            <dd>{{ country.languages.join(', ') }}</dd>
+          </div>
+        }
+        @if (country.currencies.length) {
+          <div>
+            <dt>Currency</dt>
+            <dd>{{ country.currencies.join(', ') }}</dd>
+          </div>
+        }
+        @if (country.neighbours.length) {
+          <div>
+            <dt>Neighbours</dt>
+            <dd>{{ country.neighbours.length }}</dd>
+          </div>
+        }
+      </dl>
+    }
+    @if (item.indiaRegion; as region) {
+      <p class="quiet">
+        {{ region.type === 'state' ? 'State of India' : 'Union Territory of India' }}
+      </p>
+    }
+  </section>
+} @else {
+  <section class="card empty">
+    <h2>Start exploring</h2>
+    <p>
+      Select a place on the map, or use search to discover a country, continent, ocean, or Indian
+      region.
+    </p>
+  </section>
+}

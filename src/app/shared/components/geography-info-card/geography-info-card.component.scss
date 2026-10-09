@@ -1,0 +1,45 @@
+.card {
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px #16382812;
+}
+h2 {
+  margin: 0.2rem 0 0.7rem;
+  font-size: 1.4rem;
+}
+p {
+  line-height: 1.5;
+}
+.type {
+  margin: 0;
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+dl {
+  margin: 1rem 0 0;
+}
+dl div {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 0.5rem;
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--border);
+}
+dt {
+  font-weight: 700;
+}
+dd {
+  margin: 0;
+  color: var(--muted);
+}
+.quiet {
+  color: var(--muted);
+}
+.empty {
+  color: var(--muted);
+}
