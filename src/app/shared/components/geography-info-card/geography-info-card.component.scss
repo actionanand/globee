@@ -70,6 +70,10 @@ h3 {
 .picker button:hover {
   color: var(--accent-strong);
 }
+.picker button.selected {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+}
 .picker button:focus-visible {
   outline: 3px solid #eab308;
   outline-offset: 2px;

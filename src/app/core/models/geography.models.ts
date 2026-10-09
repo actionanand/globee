@@ -45,6 +45,7 @@ export interface SpecialRegionDefinition {
 export interface ContinentDefinition {
   id: string;
   name: string;
+  mapValue?: string;
 }
 export interface GeographyEntity {
   id: string;

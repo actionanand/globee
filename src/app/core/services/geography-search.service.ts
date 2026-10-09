@@ -8,15 +8,14 @@ import {
   SpecialRegionDefinition,
 } from '../models/geography.models';
 import { CountryDataService } from './country-data.service';
+const continentNames = ['Africa', 'Asia', 'Europe', 'North America', 'South America', 'Antarctica'];
 export const CONTINENTS: ContinentDefinition[] = [
-  'Africa',
-  'Asia',
-  'Europe',
-  'North America',
-  'South America',
-  'Oceania',
-  'Antarctica',
-].map((name) => ({ id: name.toLowerCase().replaceAll(' ', '-'), name }));
+  ...continentNames.map((name): ContinentDefinition => ({
+    id: name.toLowerCase().replaceAll(' ', '-'),
+    name,
+  })),
+  { id: 'oceania', name: 'Oceania / Australia', mapValue: 'Oceania' },
+];
 export const OCEANS: OceanDefinition[] = [
   {
     id: 'pacific',

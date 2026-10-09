@@ -58,6 +58,8 @@
     @for (ocean of oceans; track ocean.id) {
       <button
         type="button"
+        [class.selected]="isSelected('ocean-' + ocean.id)"
+        [attr.aria-pressed]="isSelected('ocean-' + ocean.id)"
         (click)="selectOcean(ocean)"
         (pointerenter)="previewOcean(ocean)"
         (pointerleave)="pickerPreview.emit(null)"
@@ -75,6 +77,8 @@
     @for (continent of continents; track continent.id) {
       <button
         type="button"
+        [class.selected]="isSelected('continent-' + continent.id)"
+        [attr.aria-pressed]="isSelected('continent-' + continent.id)"
         (click)="selectContinent(continent)"
         (pointerenter)="previewContinent(continent)"
         (pointerleave)="pickerPreview.emit(null)"

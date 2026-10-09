@@ -24,6 +24,9 @@ export class GeographyInfoCardComponent {
   selectContinent(continent: (typeof CONTINENTS)[number]): void {
     this.selection.select(this.continentEntity(continent));
   }
+  isSelected(id: string): boolean {
+    return this.entity()?.id === id;
+  }
   previewContinent(continent: (typeof CONTINENTS)[number]): void {
     this.pickerPreview.emit(this.continentEntity(continent));
   }

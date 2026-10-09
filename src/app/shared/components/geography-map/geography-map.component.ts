@@ -421,7 +421,7 @@ export class GeographyMapComponent implements AfterViewInit {
           : entity.indiaRegion
             ? feature.properties['state_name'] === entity.indiaRegion.sourceName
             : entity.continent
-              ? feature.properties['globee_continent'] === entity.continent?.name
+              ? feature.properties['globee_continent'] === this.continentMapValue(entity)
               : false,
       ) ?? [];
     if (features.length) {
@@ -460,12 +460,18 @@ export class GeographyMapComponent implements AfterViewInit {
       return;
     }
     if (entity.continent) {
+      const countryCodes = this.countries.countries
+        .filter((country) => country.continent === this.continentMapValue(entity))
+        .map((country) => country.code);
       this.map.setFilter('geo-selected', [
-        '==',
-        ['get', 'globee_continent'],
-        entity.continent.name,
+        'in',
+        ['get', 'globee_country_code'],
+        ['literal', countryCodes],
       ]);
     }
+  }
+  private continentMapValue(entity: GeographyEntity): string {
+    return entity.continent?.mapValue ?? entity.continent?.name ?? '';
   }
   private restoreSelectionHighlight(): void {
     const selected = this.selection.selected();
