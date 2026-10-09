@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "develop": "ng serve --port 3041",
+    "develop": "ng serve --port 3042",
     "build": "ng build",
     "build:gh": "ng build --base-href /globee/",
     "watch": "ng build --watch --configuration development",
